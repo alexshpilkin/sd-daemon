@@ -19,7 +19,7 @@
 #define EQUALS(PTR, END, LIT) \
 	((END) - (PTR) == sizeof(LIT) - 1 && !memcmp((PTR), (LIT), sizeof(LIT) - 1))
 
-int sd_notify_socket(int unset) {
+static int notify_socket(int unset) {
 	const char *addr;
 	size_t len;
 	union {
@@ -36,7 +36,7 @@ int sd_notify_socket(int unset) {
 
 	addr = getenv(NOTIFY_SOCKET);
 	if (!addr)
-		return -EINVAL; /* FIXME */
+		return -E2BIG; /* should not happen otherwise */
 
 	if (addr[0] == '/' || addr[0] == '@') {
 		addrlen = sizeof u.un;
@@ -134,5 +134,83 @@ int sd_notify_socket(int unset) {
 bail:
 	if (unset)
 		unsetenv(NOTIFY_SOCKET);
+	return r;
+}
+
+int sd_pid_notify_with_fds(pid_t pid, int unset, const char *str,
+                           const int *fds, size_t nfds)
+{
+	int r, fd;
+	struct iovec iov;
+	struct msghdr msg;
+	struct cmsghdr *cmsg;
+#ifdef SCM_CREDENTIALS
+	struct ucred uc;
+#endif
+
+	if ((fd = notify_socket(unset)) < 0) {
+		r = fd != -E2BIG ? fd : 0; goto bail;
+	}
+
+	iov.iov_base = (char *)str;
+	iov.iov_len = str ? strlen(str) : 0;
+	msg.msg_name = NULL;
+	msg.msg_namelen = 0;
+	msg.msg_flags = 0;
+	msg.msg_iov = &iov;
+	msg.msg_iovlen = 1;
+	msg.msg_controllen = (nfds ? CMSG_SPACE(nfds * sizeof *fds) : 0)
+#ifdef SCM_CREDENTIALS
+	                   + CMSG_SPACE(sizeof uc)
+#endif
+	                   ;
+	if (!(msg.msg_control = malloc(msg.msg_controllen))) {
+		r = -errno; goto bailfd;
+	}
+
+	cmsg = CMSG_FIRSTHDR(&msg);
+
+	if (nfds) {
+		cmsg->cmsg_level = SOL_SOCKET;
+		cmsg->cmsg_type = SCM_RIGHTS;
+		cmsg->cmsg_len = CMSG_LEN(nfds * sizeof *fds);
+		memcpy(CMSG_DATA(cmsg), fds, nfds * sizeof *fds);
+
+		cmsg = CMSG_NXTHDR(&msg, cmsg);
+	}
+
+#ifdef SCM_CREDENTIALS
+	uc.pid = pid ? pid : getpid();
+	uc.uid = getuid();
+	uc.gid = getgid();
+
+	cmsg->cmsg_level = SOL_SOCKET;
+	cmsg->cmsg_type = SCM_CREDENTIALS;
+	cmsg->cmsg_len = CMSG_LEN(sizeof uc);
+	memcpy(CMSG_DATA(cmsg), &uc, sizeof uc);
+#else
+	if (pid && pid != getpid()) {
+		r = -EINVAL; return bailmsg;
+	}
+#endif
+
+	do {
+		ssize_t written;
+		if ((written = sendmsg(fd, &msg, MSG_NOSIGNAL)) < 0) {
+			r = -errno; goto bailmsg;
+		}
+		iov.iov_base = (char *)iov.iov_base + written;
+		iov.iov_len -= written;
+		free(msg.msg_control);
+		msg.msg_control = NULL;
+		msg.msg_controllen = 0;
+	} while (iov.iov_len);
+	r = 1;
+
+bailmsg:
+	free(msg.msg_control);
+bailfd:
+	close(fd);
+bail:
 	return r;
 }
