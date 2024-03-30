@@ -5,8 +5,10 @@ OBJS = \
 	sd_notify.o \
 	sd_notifyf.o \
 	sd_pid_notify_with_fds.o \
+	sd_pid_notifyf_with_fds.o \
 	# OBJS
 
 all: $(OBJS)
 clean: ; rm -f $(OBJS)
 $(OBJS): systemd/sd-daemon.h
+sd_notifyf.o sd_pid_notifyf_with_fds.o: sd_notifyf_internal.h
