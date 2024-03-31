@@ -1,8 +1,10 @@
-CPPFLAGS = -D_GNU_SOURCE -Wall -Wpedantic
+CPPFLAGS = -D_GNU_SOURCE -DNDEBUG -Wall -Wpedantic
 CFLAGS = -g -O2 -std=c89
 
 OBJS = \
 	sd_booted.o \
+	sd_is_fifo.o \
+	sd_is_socket.o \
 	sd_listen_fds.o \
 	sd_listen_fds_with_names.o \
 	sd_notify.o \

@@ -8,6 +8,8 @@ extern "C" {
 #include <stdint.h>
 #include <sys/types.h>
 
+struct sockaddr;
+
 /* sd-daemon(3) */
 
 #define SD_EMERG   "<0>"
@@ -22,6 +24,11 @@ extern "C" {
 /* sd_booted(3) */
 
 int sd_booted(void);
+
+/* sd_is_fifo(3) */
+
+int sd_is_fifo(int, const char *);
+int sd_is_socket(int, int, int, int);
 
 /* sd_listen_fds(3) */
 
