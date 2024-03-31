@@ -19,6 +19,14 @@ extern "C" {
 #define SD_INFO    "<6>"
 #define SD_DEBUG   "<7>"
 
+/* sd_listen_fds(3) */
+
+enum { SD_LISTEN_FDS_START = 3 };
+#define SD_LISTEN_FDS_START SD_LISTEN_FDS_START
+
+int sd_listen_fds(int);
+int sd_listen_fds_with_names(int, char ***);
+
 /* sd_notify(3) */
 
 int sd_notify(int, const char *);
