@@ -8,6 +8,19 @@ extern "C" {
 #include <stdint.h>
 #include <sys/types.h>
 
+/* sd-daemon(3) */
+
+#define SD_EMERG   "<0>"
+#define SD_ALERT   "<1>"
+#define SD_CRIT    "<2>"
+#define SD_ERR     "<3>"
+#define SD_WARNING "<4>"
+#define SD_NOTICE  "<5>"
+#define SD_INFO    "<6>"
+#define SD_DEBUG   "<7>"
+
+/* sd_notify(3) */
+
 int sd_notify(int, const char *);
 int sd_notifyf(int, const char *, ...);
 int sd_pid_notify(pid_t, int, const char *);
