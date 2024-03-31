@@ -54,6 +54,12 @@ int sd_notify_barrier(int, uint64_t);
 int sd_pid_notify_barrier(pid_t, int, uint64_t);
 #endif
 
+/* sd_watchdog_enabled(3) */
+
+#ifdef UINT64_MAX
+int sd_watchdog_enabled(int, uint64_t *);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

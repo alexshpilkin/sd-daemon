@@ -17,6 +17,7 @@ OBJS = \
 	sd_pid_notifyf_with_fds.o \
 	sd_notify_barrier.o \
 	sd_pid_notify_barrier.o \
+	sd_watchdog_enabled.o \
 	# OBJS
 
 all: libsd-daemon.a
