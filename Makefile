@@ -12,7 +12,9 @@ OBJS = \
 	sd_pid_notify_barrier.o \
 	# OBJS
 
-all: $(OBJS)
-clean: ; rm -f $(OBJS)
+all: libsd-daemon.a
+mostlyclean: ; rm -f $(OBJS)
+clean: mostlyclean ; rm -f libsd-daemon.a
+libsd-daemon.a: $(OBJS) ; $(AR) $(ARFLAGS) libsd-daemon.a $(OBJS)
 $(OBJS): systemd/sd-daemon.h
 sd_notifyf.o sd_pid_notifyf.o sd_pid_notifyf_with_fds.o: sd_notifyf_internal.h
