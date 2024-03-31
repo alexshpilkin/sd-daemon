@@ -8,6 +8,8 @@ OBJS = \
 	sd_pid_notifyf.o \
 	sd_pid_notify_with_fds.o \
 	sd_pid_notifyf_with_fds.o \
+	sd_notify_barrier.o \
+	sd_pid_notify_barrier.o \
 	# OBJS
 
 all: $(OBJS)
