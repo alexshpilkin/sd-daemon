@@ -118,6 +118,19 @@ static int notify_socket(int unset) {
 			if ((fd = socket(PF_VSOCK, SOCK_STREAM, 0)) >= 0)
 				break;
 		} while (0);
+
+		if (fd >= 0) {
+			struct sockaddr_vm vm;
+			vm.svm_family = AF_VSOCK;
+			vm.svm_cid = VMADDR_CID_ANY;
+			for (vm.svm_port = 1023; vm.svm_port > 0; vm.svm_port--) {
+				if (bind(fd, (struct sockaddr *)&vm, sizeof vm) >= 0)
+					break;
+				if (errno != EADDRINUSE)
+					break;
+			}
+			/* ignore errors */
+		}
 #else /* AF_VSOCK */
 		r = -EPROTO; goto bail;
 #endif /* AF_VSOCK */
