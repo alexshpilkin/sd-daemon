@@ -30,6 +30,7 @@ int sd_booted(void);
 int sd_is_fifo(int, const char *);
 int sd_is_socket(int, int, int, int);
 int sd_is_socket_inet(int, int, int, int, uint16_t);
+int sd_is_socket_sockaddr(int, int, const struct sockaddr *, size_t, int);
 int sd_is_socket_unix(int, int, int, const char *, size_t);
 
 /* sd_listen_fds(3) */

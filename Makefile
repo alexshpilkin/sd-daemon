@@ -6,6 +6,7 @@ OBJS = \
 	sd_is_fifo.o \
 	sd_is_socket.o \
 	sd_is_socket_inet.o \
+	sd_is_socket_sockaddr.o \
 	sd_is_socket_unix.o \
 	sd_listen_fds.o \
 	sd_listen_fds_with_names.o \
