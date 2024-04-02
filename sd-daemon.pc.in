@@ -1,0 +1,12 @@
+# @configure@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+libdir=@libdir@
+
+Name: sd-daemon
+Description: Reimplementation of the sd-daemon(3) routines from libsystemd
+Version: @version@
+Cflags: -I${includedir}/sd-daemon
+Libs: -L${libdir} -lsd-daemon

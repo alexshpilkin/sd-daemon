@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+if [ -f VERSION ]; then
+	cat VERSION
+elif ${GIT:=git} rev-parse HEAD >/dev/null 2>&1; then
+	$GIT update-index -q --really-refresh
+	$GIT describe --dirty 2>/dev/null | sed '
+	s/^v//
+	s/-\([0-9]*\)-g/+dev.\1.g/
+	s/-dirty$/.dirty/'
+else
+	echo ', $Format:%D$,' | sed -n '
+	s/^.*, tag: v\?\([0-9][^, ]*\),.*$/\1/p'
+fi
