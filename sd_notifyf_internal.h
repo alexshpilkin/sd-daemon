@@ -16,7 +16,7 @@
 		*(BUF) = NULL; \
 	} else { \
 		va_start(ap, FMT); \
-		vsnprintf(*(BUF), size, FMT, ap); \
+		vsnprintf(*(BUF), size + 1, FMT, ap); \
 		va_end(ap); \
 	} \
 } while (0)
